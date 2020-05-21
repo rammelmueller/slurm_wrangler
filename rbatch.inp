@@ -22,7 +22,7 @@ variable:
     values: [234,542]
     order: 4
   beta:
-    values: [[1.0,2.0]]
+    values: [1.0]
     order: 3
   coupling:
     values: [0.3, 0.6, 0.9, 1.2]
@@ -36,13 +36,13 @@ variable:
 
 exec_param:
   # can either be plain, yaml or json
-  config: json
+  config: yaml
 
-  executable : dummy
   dir: run
   inp: setup.inp
   log: logfile.log
-  exec_command: ./{exec} -i {inp} -o {log}
+  exec_command: ./dummy -i {inp} -o {log}
+  executable: dummy
 
   # Stuff that is done in the beginning of each script (loading of environment,
   # mostly).
@@ -55,14 +55,26 @@ exec_param:
    - mkdir field_configs
 
 # -----------------------------------------------------------
-# SLURM stuff.
+# SLURM commands.
+# All slurm directives can be specified here.
 
 slurm:
-  threads: 1
-  hours: 24
-  minutes: 0
-  memory: 2496
-  partition: general1
-  max_cores: 2
+  ntasks : 1
+  ntasks-per-node : 1
+  nodes : 1
+  ntasks-per-socket : 1
+
+  # Other options:
+  # job-name : <string>
+  # cpus-per-task : <int>
+  # time : <00:00:00>
+  # mem-per-cpu : <int>
+  # partition : <string>
+  # constraint : <string>
+  # mail-type : [FAIL, ALL, ...]
+  # chdir : /home/m/Max.Mustermann/slurm-intro
+  # output : /home/m/Max.Musterman/slurm-intro/slurm.%j.%N.out
+  # exclusive : ''
+  # error: test1.sh.%j.err
 
 # -----------------------------------------------------------

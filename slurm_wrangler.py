@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------"""
 import argparse, os, sys, yaml
 from expander import expand_dict
-from multi_run import RunCollection
+from multi_run import SLURMRunCollection
 
 parser = argparse.ArgumentParser(description='RICHARD - the lionheart.',
     formatter_class=argparse.RawTextHelpFormatter)
@@ -44,6 +44,7 @@ with open(args.i, 'r') as stream:
     except yaml.YAMLError as exc:
         print(exc)
 jobs = expand_dict(config['variable'])
+
 
 run = SLURMRunCollection(jobs, config['fixed'], config['exec_param'], config['slurm'])
 run.create_populated_directories()
