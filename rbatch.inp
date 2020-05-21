@@ -1,4 +1,4 @@
-# -----------------------------------------------------------
+# ------------------------------------------------------------------------------
 fixed:
   data_file : results.hdf5
   file_access_mode: replace
@@ -16,7 +16,7 @@ fixed:
   mass : [1.0, 1.0]
   dims : 1
 
-# ------------------------------
+# ------------------------------------------------------------------------------
 variable:
   seed:
     values: [234,542]
@@ -31,7 +31,7 @@ variable:
     values: [32]
     order: 1
 
-# -----------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Setup parameters.
 
 exec_param:
@@ -42,7 +42,7 @@ exec_param:
   inp: setup.inp
   log: logfile.log
   exec_command: ./dummy -i {inp} -o {log}
-  executable: dummy
+  copy_files: [dummy, dummy2]
 
   # Stuff that is done in the beginning of each script (loading of environment,
   # mostly).
@@ -54,7 +54,7 @@ exec_param:
   job_preamble:
    - mkdir field_configs
 
-# -----------------------------------------------------------
+# ------------------------------------------------------------------------------
 # SLURM commands.
 # All slurm directives can be specified here.
 
@@ -77,4 +77,4 @@ slurm:
   # exclusive : ''
   # error: test1.sh.%j.err
 
-# -----------------------------------------------------------
+# ------------------------------------------------------------------------------

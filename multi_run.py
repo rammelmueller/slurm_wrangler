@@ -17,7 +17,7 @@ class SLURMRunCollection(object):
     def __init__(self, jobs, fixed_dict, exec_param, slurm):
         # Set defaults & update with given values.
         self.exec_param = {
-            'executable' : None,
+            'copy_files' : []l,
             'sep' : '!',
             'order' : [],
             'preamble_commands' : [],
@@ -38,8 +38,6 @@ class SLURMRunCollection(object):
         # Build the command to execute the code.
         self.code_execution = self.exec_param['exec_command'].replace('{inp}', exec_param['inp'])
         self.code_execution = self.code_execution.replace('{log}', exec_param['log'])
-        if self.exec_param['executable'] is not None:
-            self.code_execution = self.code_execution.replace('{exec}', self.exec_param['executable'])
         self.code_execution += ' &'
 
         # Set the root.
@@ -74,11 +72,11 @@ class SLURMRunCollection(object):
             else:
                 raise NotImplementedError('Type of configuration file not supported!')
 
-            # Copy the executable and make it executable.
-            if self.exec_param['executable'] is not None:
-                shutil.copyfile(self.exec_param['executable'], job.path + self.exec_param['executable'])
-                st = os.stat(job.path + self.exec_param['executable'])
-                os.chmod(job.path + self.exec_param['executable'], st.st_mode | stat.S_IEXEC)
+            # Copy the executables and make them executable.
+            for cpfile in self.exec_param['copy_files']:
+                shutil.copyfile(cpfile, job.path + cpfile)
+                st = os.stat(job.path + cpfile)
+                os.chmod(job.path + cpfile, st.st_mode | stat.S_IEXEC)
 
 
     def create_scripts(self):
