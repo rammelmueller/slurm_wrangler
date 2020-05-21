@@ -17,7 +17,7 @@ class SLURMRunCollection(object):
     def __init__(self, jobs, fixed_dict, exec_param, slurm):
         # Set defaults & update with given values.
         self.exec_param = {
-            'copy_files' : []l,
+            'copy_files' : [],
             'sep' : '!',
             'order' : [],
             'preamble_commands' : [],
@@ -116,9 +116,16 @@ class SLURMRunCollection(object):
             slurm_job_lines.append(self.code_execution)
             slurm_job_lines.append("sleep 0.5\n")
 
+            # Some job-specifc slurm lines.
+            sjl = [
+                '#SBATCH --chdir={:s}'.format(job.path),
+                '#SBATCH --output={:s}'.format(job.path+self.exec_param['log']),
+                '#SBATCH --error={:s}\n\n'.format(job.path+'error.log'),
+            ]
+
             # Produce a script and add it to the list of scripts we produced.
             slurm_script = RunScript(
-                preamble=slurm_preamble + ['#SBATCH --output={:s}'.format(job.path)],
+                preamble=slurm_preamble + sjl,
                 main_text=slurm_job_lines,
                 epilogue=slurm_epilogue,
                 filename=self.root+filename,
