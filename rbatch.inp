@@ -1,0 +1,68 @@
+# -----------------------------------------------------------
+fixed:
+  data_file : results.hdf5
+  file_access_mode: replace
+
+  n_cp : 1000
+  warmup_rate : 0.1
+  cl_step : 0.04
+  cl_interval : 1.0
+  xi : 0.1
+  dtau : 0.05
+  seg_len : 1
+
+  beta_mu : 0.0
+  beta_h : 1.0
+  mass : [1.0, 1.0]
+  dims : 1
+
+# ------------------------------
+variable:
+  seed:
+    values: [234,542]
+    order: 4
+  beta:
+    values: [[1.0,2.0]]
+    order: 3
+  coupling:
+    values: [0.3, 0.6, 0.9, 1.2]
+    order: 2
+  nx:
+    values: [32]
+    order: 1
+
+# -----------------------------------------------------------
+# Setup parameters.
+
+exec_param:
+  # can either be plain, yaml or json
+  config: json
+
+  executable : dummy
+  dir: run
+  inp: setup.inp
+  log: logfile.log
+  exec_command: ./{exec} -i {inp} -o {log}
+
+  # Stuff that is done in the beginning of each script (loading of environment,
+  # mostly).
+  preamble_commands:
+   - module load blas/intel/64/1
+
+  # These are commands that are executed before every single job (only important
+  # if there are mutliple jobs bundled together in a single script).
+  job_preamble:
+   - mkdir field_configs
+
+# -----------------------------------------------------------
+# SLURM stuff.
+
+slurm:
+  threads: 1
+  hours: 24
+  minutes: 0
+  memory: 2496
+  partition: general1
+  max_cores: 2
+
+# -----------------------------------------------------------
