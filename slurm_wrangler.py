@@ -16,6 +16,8 @@
                         of the enviroment
         - slurm:        SLURM specific commands
 
+    A more complete overview is in the README.
+
     Usage:
 
             python slurm_wrangler.py -i <input_file.yml>
@@ -23,9 +25,9 @@
 -----------------------------------------------------------------------------"""
 import argparse, os, sys, yaml
 from expander import expand_dict
-from multi_run import SLURMRunCollection
+from multi_runs import SLURMRunCollection
 
-parser = argparse.ArgumentParser(description='RICHARD - the lionheart.',
+parser = argparse.ArgumentParser(description='SLURM wrangler.',
     formatter_class=argparse.RawTextHelpFormatter)
 
 # General i/O parameters.
@@ -46,6 +48,6 @@ with open(args.i, 'r') as stream:
 jobs = expand_dict(config['variable'])
 
 
-run = SLURMRunCollection(jobs, config['fixed'], config['exec_param'], config['slurm'])
+run = SLURMRunCollection(config['slurm'], jobs, config['fixed'], config['exec_param'])
 run.create_populated_directories()
 run.create_scripts()

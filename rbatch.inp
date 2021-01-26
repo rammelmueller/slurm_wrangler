@@ -1,34 +1,15 @@
 # ------------------------------------------------------------------------------
 fixed:
-  data_file : results.hdf5
-  file_access_mode: replace
-
-  n_cp : 1000
-  warmup_rate : 0.1
-  cl_step : 0.04
-  cl_interval : 1.0
-  xi : 0.1
-  dtau : 0.05
-  seg_len : 1
-
-  beta_mu : 0.0
-  beta_h : 1.0
-  mass : [1.0, 1.0]
-  dims : 1
+  param_a : 42
+  param_b: "vogons"
 
 # ------------------------------------------------------------------------------
 variable:
-  seed:
-    values: [234,542]
-    order: 4
-  beta:
-    values: [1.0]
-    order: 3
-  coupling:
-    values: [0.3, 0.6, 0.9, 1.2]
+  param_c:
+    values: [123,456]
     order: 2
-  nx:
-    values: [32]
+  param_d:
+    values: [1.0,2.0]
     order: 1
 
 # ------------------------------------------------------------------------------
@@ -42,17 +23,17 @@ exec_param:
   inp: setup.inp
   log: logfile.log
   exec_command: ./dummy -i {inp} -o {log}
-  copy_files: [dummy, dummy2]
+  copy_files: [dummy]
 
   # Stuff that is done in the beginning of each script (loading of environment,
   # mostly).
   preamble_commands:
-   - module load blas/intel/64/1
+   - source /path/to/venv/bin/activate
 
   # These are commands that are executed before every single job (only important
   # if there are mutliple jobs bundled together in a single script).
   job_preamble:
-   - mkdir field_configs
+   - mkdir output_dir
 
 # ------------------------------------------------------------------------------
 # SLURM commands.
@@ -62,7 +43,7 @@ slurm:
   ntasks : 1
   ntasks-per-node : 1
   nodes : 1
-  ntasks-per-socket : 1
+  time : 01:00:00
 
   # Other options:
   # job-name : <string>
