@@ -5,8 +5,8 @@
     Functionality for multiple SLURM runs.
 
 -----------------------------------------------------------------------------"""
-import datetime
-from . import RunCollection
+from . import RunCollection, RunScript
+
 
 class SLURMRunCollection(RunCollection):
     """	SLURM specific implementation.
@@ -16,8 +16,11 @@ class SLURMRunCollection(RunCollection):
         self.slurm = slurm
         self.out_file = 'run.sh'
 
+        # Add this for parallel support.
+        self.code_execution += ' &'
+
     def __str__(self):
-        return "SLURM Run with {:d} jobs.".format(len(self.jobs))
+        return "SLURM run with {:d} jobs.".format(len(self.jobs))
 
     def create_scripts(self):
         """ Interface for the creation of SLURM/batch scripts.
@@ -27,7 +30,8 @@ class SLURMRunCollection(RunCollection):
         else:
             self.scripts = self._create_single_SLURM_scripts()
         for script in self.scripts:
-            script.persist()
+            script.persist(shebang="#!/bin/bash")
+
 
     def _create_single_SLURM_scripts(self):
         """ Creates a single SLURM script per job - ASC style.
@@ -78,49 +82,3 @@ class SLURMRunCollection(RunCollection):
             print(slurm_script)
 
         return scripts
-
-
-
-
-class RunScript(object):
-    """   A class that represents a script file.
-    """
-    def __init__(self, preamble=[], main_text=[], epilogue=[], filename=None, info_param=None):
-        """ Set up everything to
-        """
-        self.preamble = preamble
-        self.epilogue = epilogue
-        self.main_text = main_text
-        self.filename = filename
-        self.info_param = info_param
-
-
-    def __str__(self):
-        return "{:s}: script has {:d} tasks ({:d} of {:d} threads used).".format(
-            self.filename,
-            self.info_param['n_jobs'], self.info_param['n_threads']*self.info_param['n_jobs'],
-            self.info_param['maxcores'])
-
-
-    def persist(self):
-        """ Write the script to its file.
-        """
-        if self.filename is None:
-            raise IOError('No filename specified for script.')
-
-        wrt = lambda t, f: f.write(t + '\n')
-        with open(self.filename, 'w') as f:
-
-            # Write some information.
-            f.write('#!/bin/bash\n')
-            f.write('################################################################################\n')
-            f.write('#\n')
-            f.write('# This script was produced by slurm_wrangler at {:s} \n'.format(datetime.datetime.now().strftime("%d.%m.%Y, %H:%M:%S")))
-            f.write('#\n')
-            f.write('################################################################################\n\n\n')
-
-
-            # Write the actual content.
-            list(map(lambda t: wrt(t, f), self.preamble))
-            list(map(lambda t: wrt(t, f), self.main_text))
-            list(map(lambda t: wrt(t, f), self.epilogue))

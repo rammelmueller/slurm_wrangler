@@ -70,13 +70,11 @@ This can now be sent to SLURM by simply invoking `sbatch <scriptname>` and alrea
 ### Output (local)
 If you used the `-local` flag, all job directories will be the same but the job script is slightly different. Instead of (potentially separate) bash scripts there will be a single Python script which will run your jobs in place of the SLURM scheduler. To run it, simply type
 ```
-   python <name_of_script> --nthreads=<number of threads>
+   python <name_of_script>
 ```
-where the flag defines how many jobs are run in parallel. The default is single core.   
-
+where the number of cores used is fixed in the script (and set to the value as specified in the input). To change it, you need to manually change the script in only one place.
 
 
 
 ## Notes
  - Multiple jobs per SLURM scripts are not supported as of now (planned).
- -

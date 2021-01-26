@@ -5,7 +5,7 @@
 
 
 -----------------------------------------------------------------------------"""
-import sys, re, os, shutil, stat, time, datetime, hashlib, copy, json, yaml
+import sys, re, os, shutil, datetime, stat, time, hashlib, copy, json, yaml
 import numpy as np
 from copy import deepcopy, copy
 
@@ -28,6 +28,7 @@ class RunCollection(object):
             'dir' : 'run',
             'type' : 'slurm',
             'config' : 'json',
+            'n_threads' : 1,
         }
         self.exec_param.update(exec_param)
 
@@ -37,7 +38,6 @@ class RunCollection(object):
         # Build the command to execute the code.
         self.code_execution = self.exec_param['exec_command'].replace('{inp}', exec_param['inp'])
         self.code_execution = self.code_execution.replace('{log}', exec_param['log'])
-        self.code_execution += ' &'
 
         # Set the root.
         self.root = os.getcwd() + "/" + self.exec_param['dir'] + '/'
@@ -73,6 +73,56 @@ class RunCollection(object):
                 shutil.copyfile(cpfile, job.path + cpfile)
                 st = os.stat(job.path + cpfile)
                 os.chmod(job.path + cpfile, st.st_mode | stat.S_IEXEC)
+
+
+
+class RunScript(object):
+    """   A class that represents a script file.
+    """
+    def __init__(self, preamble=[], main_text=[], epilogue=[], filename=None, info_param=None):
+        """ Set up everything to
+        """
+        self.preamble = preamble
+        self.epilogue = epilogue
+        self.main_text = main_text
+        self.filename = filename
+        self.info_param = info_param
+
+
+    def __str__(self):
+        msg =  "{:s}: script has {:d} tasks.".format(
+            self.filename,
+            self.info_param['n_jobs']
+        )
+        if "n_threads" in self.info_param:
+            msg += " ({:d} threads used)".format(
+                self.info_param['n_threads']
+            )
+        return msg
+
+
+    def persist(self, shebang=""):
+        """ Write the script to its file.
+        """
+        if self.filename is None:
+            raise IOError('No filename specified for script.')
+
+        wrt = lambda t, f: f.write(t + '\n')
+        with open(self.filename, 'w') as f:
+
+            # Write some information.
+            f.write(shebang+'\n')
+            f.write('################################################################################\n')
+            f.write('#\n')
+            f.write('# This script was produced by slurm_wrangler at {:s} \n'.format(datetime.datetime.now().strftime("%d.%m.%Y, %H:%M:%S")))
+            f.write('#\n')
+            f.write('################################################################################\n\n\n')
+
+
+            # Write the actual content.
+            list(map(lambda t: wrt(t, f), self.preamble))
+            list(map(lambda t: wrt(t, f), self.main_text))
+            list(map(lambda t: wrt(t, f), self.epilogue))
 
 
 

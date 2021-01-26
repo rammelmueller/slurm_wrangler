@@ -24,6 +24,7 @@ exec_param:
   log: logfile.log
   exec_command: ./dummy -i {inp} -o {log}
   copy_files: [dummy]
+  n_threads: 2
 
   # Stuff that is done in the beginning of each script (loading of environment,
   # mostly).

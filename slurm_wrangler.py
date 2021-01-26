@@ -25,17 +25,15 @@
 -----------------------------------------------------------------------------"""
 import argparse, os, sys, yaml
 from expander import expand_dict
-from multi_runs import SLURMRunCollection
+from multi_runs import SLURMRunCollection, PythonRunCollection
+
 
 parser = argparse.ArgumentParser(description='SLURM wrangler.',
     formatter_class=argparse.RawTextHelpFormatter)
-
-# General i/O parameters.
 parser.add_argument('-i', metavar='input', type=str, nargs='?', default=None,
     help=("Input batch file.\n\n")
 )
-
-# ------------------------------------------------------------------------------
+parser.add_argument('-local', action='store_true', help='Toggls python style.')
 args = parser.parse_args()
 
 
@@ -47,7 +45,12 @@ with open(args.i, 'r') as stream:
         print(exc)
 jobs = expand_dict(config['variable'])
 
+# Choose the type an create.
+if args.local:
+    run = PythonRunCollection(jobs, config['fixed'], config['exec_param'])
+else:
+    run = SLURMRunCollection(config['slurm'], jobs, config['fixed'], config['exec_param'])
 
-run = SLURMRunCollection(config['slurm'], jobs, config['fixed'], config['exec_param'])
+# Persist to disk.
 run.create_populated_directories()
 run.create_scripts()
