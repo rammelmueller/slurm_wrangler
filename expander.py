@@ -4,6 +4,9 @@ from copy import copy
 def expand_dict(basedict, fix_dict = {}, level=1):
     """ Flattens a dictionary for the 'variable' entry of a config YAML file.
     """
+    if basedict is None:
+        return [{}]
+
     if len(basedict) == 0:
         return [{}]
 

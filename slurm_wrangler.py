@@ -43,7 +43,11 @@ with open(args.i, 'r') as stream:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
         print(exc)
-jobs = expand_dict(config['variable'])
+
+# Make the list of jobs.
+jobs = expand_dict(config.get('variable', None))
+for p in config['param_sets']:
+    jobs.append(p)
 
 # Choose the type an create.
 if args.local:
