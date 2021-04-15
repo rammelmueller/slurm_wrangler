@@ -46,7 +46,7 @@ with open(args.i, 'r') as stream:
 
 # Make the list of jobs.
 jobs = expand_dict(config.get('variable', None))
-for p in config['param_sets']:
+for p in config.get('param_sets', []):
     jobs.append(p)
 
 # Choose the type an create.
