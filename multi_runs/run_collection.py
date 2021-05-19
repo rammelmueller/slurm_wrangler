@@ -184,6 +184,7 @@ class SingleJob(object):
         # First we need to translate into sections.
         parser = ConfigParser()
         iparam = copy(self.param)
+
         delkeys = []
         for key in iparam:
             if "." in key:
@@ -194,6 +195,11 @@ class SingleJob(object):
         # Delete the original keys separated with dots.
         for key in delkeys:
             del iparam[key]
+
+        # Convert everything to string, which is apparently needed to write the thing.
+        for section in iparam:
+            for key in iparam[section]:
+                iparam[section][key] = str(iparam[section][key])
 
         # Convert and dump.
         parser.read_dict(iparam)
