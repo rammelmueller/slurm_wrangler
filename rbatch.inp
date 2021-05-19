@@ -1,28 +1,32 @@
 # ------------------------------------------------------------------------------
 fixed:
-  param_a : 42
-  param_b: "vogons"
+  boolean :
+    test_b1: (1,2)
+    test_b2: [2]
+
+  other:
+    name: "vogons"
 
 # ------------------------------------------------------------------------------
 variable:
-  param_c:
+  boolean.param_c:
     values: [123,456]
     order: 2
-  param_d:
+  boolean.param_d:
     values: [1.0,2.0]
     order: 1
 
 # ------------------------------------------------------------------------------
 param_sets:
-  - {param_c: 1, param_d: 1}
-  - {param_c: 1, param_d: 2}
+  - {boolean.param_c: 1, boolean.param_d: 1}
+  - {boolean.param_c: 1, boolean.param_d: 2}
 
 # ------------------------------------------------------------------------------
 # Setup parameters.
 
 exec_param:
   # can either be plain, yaml or json
-  config: yaml
+  config: ini
 
   dir: run
   inp: setup.inp

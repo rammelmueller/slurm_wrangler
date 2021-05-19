@@ -8,6 +8,7 @@
 import sys, re, os, shutil, datetime, stat, time, hashlib, copy, json, yaml
 import numpy as np
 from copy import deepcopy, copy
+from configparser import ConfigParser
 
 
 class RunCollection(object):
@@ -65,6 +66,8 @@ class RunCollection(object):
                 job.create_JSON_config(filename=self.exec_param['inp'])
             elif self.exec_param['config'] == 'yaml':
                 job.create_YAML_config(filename=self.exec_param['inp'])
+            elif self.exec_param['config'] == 'ini':
+                job.create_INI_config(filename=self.exec_param['inp'])
             else:
                 raise NotImplementedError('Type of configuration file not supported!')
 
@@ -162,7 +165,37 @@ class SingleJob(object):
 
 
     def create_YAML_config(self, filename="setup.inp"):
-        """	Creates a JSON config file in the directory self.path.
+        """	Creates a YAML config file in the directory self.path.
         """
         with open(self.path + filename, 'w') as f:
             yaml.dump(self.param, f, default_flow_style=False)
+
+
+    def create_INI_config(self, filename="setup.inp"):
+        """ Creates a INI style config file in the directory self.path.
+            Those are the ones read/written by the `configparser` module.
+
+            Notes:
+                -   A valid inupt file needs to have sections - this is not
+                    checked beforehand. If this is violated, the conversion will
+                    throw an error.
+                -   Currently only works for one level of sections, so no subections.
+        """
+        # First we need to translate into sections.
+        parser = ConfigParser()
+        iparam = copy(self.param)
+        delkeys = []
+        for key in iparam:
+            if "." in key:
+                delkeys.append(key)
+                parts = key.split(".")
+                iparam[parts[0]][parts[1]] = self.param[key] # For multilevel this would have to be done recursively, probably.
+
+        # Delete the original keys separated with dots.
+        for key in delkeys:
+            del iparam[key]
+
+        # Convert and dump.
+        parser.read_dict(iparam)
+        with open(self.path + filename, 'w') as f:
+            parser.write(f)
